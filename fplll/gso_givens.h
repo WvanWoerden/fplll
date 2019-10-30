@@ -310,7 +310,7 @@ inline ZT &MatGSOGivens<ZT, FT>::sqnorm_coordinates(ZT &sqnorm, vector<ZT> coord
   ZT tmp;
   sqnorm = 0;
   vector_matrix_product(tmpvec, coordinates, b);
-  for (int j = 0; j < get_cols_of_b(); j++)
+  for (int j = 0; j < b.get_rows(); j++)
   {
     tmp.mul(tmpvec[j], tmpvec[j]);
     sqnorm.add(sqnorm, tmp);
