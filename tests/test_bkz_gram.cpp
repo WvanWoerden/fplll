@@ -151,12 +151,9 @@ int test_bkz(ZZ_mat<ZT> &A, const int block_size, FloatType float_type, int flag
     BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObjgram(Mgram, LLLObjgram, param);
     BKZObjgram.bkz();
 
-    cerr << "Before LLL" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<double>> LLLObjgive(Mgive, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
-    cerr << "Before bkz" << endl;
     BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObjgive(Mgive, LLLObjgive, param);
     BKZObjgive.bkz();
-    cerr << "After bkz" << endl;
 
     if (BKZObjgive.status != RED_SUCCESS)
     {
@@ -186,12 +183,9 @@ int test_bkz(ZZ_mat<ZT> &A, const int block_size, FloatType float_type, int flag
     BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObjgram(Mgram, LLLObjgram, param);
     BKZObjgram.bkz();
 
-    cerr << "Before LLL" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObjgive(Mgive, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
-    cerr << "Before bkz" << endl;
     BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObjgive(Mgive, LLLObjgive, param);
     BKZObjgive.bkz();
-    cerr << "After bkz" << endl;
 
     FP_NR<mpfr_t>::set_prec(old_prec);
 
