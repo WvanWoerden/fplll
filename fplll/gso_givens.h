@@ -20,6 +20,7 @@
 
 #include "gso_interface.h"
 #include "nr/matrix.h"
+#include "util.h"
 
 FPLLL_BEGIN_NAMESPACE
 
@@ -163,6 +164,10 @@ public:
   Matrix<FT> ops_c;
   Matrix<FT> ops_s;
 
+
+
+  virtual inline ZT &sqnorm_coordinates(ZT &sqnorm, vector<ZT> coordinates);
+
   // long int ops_counter;
 
   // irtual inline const FT &get_l_exp(int i, int j, long &expo) final;
@@ -266,6 +271,7 @@ public:
 
   //  virtual inline void printparam(ostream &os);
   virtual inline FT &get_gram(FT &f, int i, int j) final;
+  virtual inline ZT &get_int_gram(ZT &z, int i, int j);
 
   // b[i] <-> b[j] (i < j)
   virtual void row_swap(int i, int j);
@@ -296,6 +302,22 @@ column) {
         compute_mu_and_r_columns(column,column);
 }
 */
+
+template <class ZT, class FT>
+inline ZT &MatGSOGivens<ZT, FT>::sqnorm_coordinates(ZT &sqnorm, vector<ZT> coordinates)
+{
+  vector<ZT> tmpvec;
+  ZT tmp;
+  sqnorm = 0;
+  vector_matrix_product(tmpvec, coordinates, b);
+  for (int j = 0; j < get_cols_of_b(); j++)
+  {
+    tmp.mul(tmpvec[j], tmpvec[j]);
+    sqnorm.add(sqnorm, tmp);
+  }
+  return sqnorm;
+}
+
 template <class ZT, class FT> inline long MatGSOGivens<ZT, FT>::get_max_exp_of_b()
 {
   return b.get_max_exp();
@@ -367,6 +389,16 @@ template <class ZT, class FT> inline FT &MatGSOGivens<ZT, FT>::get_gram(FT &f, i
   f = gf(i, j);
 
   return f;
+}
+
+template <class ZT, class FT> inline ZT &MatGSOGivens<ZT, FT>::get_int_gram(ZT &z, int i, int j)
+{
+  FPLLL_DEBUG_CHECK(i >= 0 && i < n_known_rows && j >= 0 && j <= i && j < n_source_rows &&
+                    !in_row_op_range(i));
+
+    b[i].dot_product(z, b[j], b.get_cols());
+  
+  return z;
 }
 
 template <class ZT, class FT> inline bool MatGSOGivens<ZT, FT>::is_givens() { return true; }
