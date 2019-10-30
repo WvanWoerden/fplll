@@ -17,6 +17,7 @@
 #include <cstring>
 #include <fplll.h>
 #include <gso_gram.h>
+#include <gso_givens.h>
 #include <gso_interface.h>
 #include <test_utils.h>
 
@@ -109,6 +110,18 @@ int test_bkz(ZZ_mat<ZT> &A, const int block_size, FloatType float_type, int flag
       A[i].dot_product(G(i, j), A[j], c);
     }
   }
+
+  // Create copy of A.
+
+  ZZ_mat<ZT> A2;
+  A2.resize(r, c);
+  for (int i = 0; i < r; i++)
+  {
+    for (int j = 0; j < c; j++)
+    {
+      A2(i, j) = A(i, j);
+    }
+  }
   // ------------------------------------------------
   // ************************************************
 
@@ -127,6 +140,8 @@ int test_bkz(ZZ_mat<ZT> &A, const int block_size, FloatType float_type, int flag
     M.update_gso();
     MatGSOGram<Z_NR<ZT>, FP_NR<double>> Mgram(G, U, UT, 1);
     Mgram.update_gso();
+    MatGSOGivens<Z_NR<ZT>, FP_NR<double>> Mgive(A2, U, UT, GSO_GIVENS_MOVE_LAZY);
+    Mgive.update_gso();
 
     LLLReduction<Z_NR<ZT>, FP_NR<double>> LLLObj(M, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObj(M, LLLObj, param);
@@ -136,24 +151,56 @@ int test_bkz(ZZ_mat<ZT> &A, const int block_size, FloatType float_type, int flag
     BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObjgram(Mgram, LLLObjgram, param);
     BKZObjgram.bkz();
 
+    cerr << "Before LLL" << endl;
+    LLLReduction<Z_NR<ZT>, FP_NR<double>> LLLObjgive(Mgive, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
+    cerr << "Before bkz" << endl;
+    BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObjgive(Mgive, LLLObjgive, param);
+    BKZObjgive.bkz();
+    cerr << "After bkz" << endl;
+
+    if (BKZObjgive.status != RED_SUCCESS)
+    {
+      cerr << "BKZ reduction failed with error '" << get_red_status_str(BKZObjgive.status);
+      cerr << " for float type " << FLOAT_TYPE_STR[float_type] << endl;
+      return BKZObjgive.status;
+    }
+
     return gram_is_equal(A, G);
   }
   else if (sel_ft == FT_MPFR)
   {
     int old_prec = FP_NR<mpfr_t>::set_prec(prec);
 
-    MatGSO<Z_NR<ZT>, FP_NR<mpfr_t>> M(A, U, UT, 1);
+    MatGSO<Z_NR<ZT>, FP_NR<mpfr_t>> M(A, U, UT, 0);
     M.update_gso();
     MatGSOGram<Z_NR<ZT>, FP_NR<mpfr_t>> Mgram(G, U, UT, 1);
     Mgram.update_gso();
+    MatGSOGivens<Z_NR<ZT>, FP_NR<mpfr_t>> Mgive(A2, U, UT, GSO_GIVENS_MOVE_LAZY);
+    Mgive.update_gso();
 
     LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObj(M, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
-    LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObjgram(Mgram, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
-
     BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObj(M, LLLObj, param);
+    BKZObj.bkz();
+
+    LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObjgram(Mgram, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObjgram(Mgram, LLLObjgram, param);
+    BKZObjgram.bkz();
+
+    cerr << "Before LLL" << endl;
+    LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObjgive(Mgive, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
+    cerr << "Before bkz" << endl;
+    BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObjgive(Mgive, LLLObjgive, param);
+    BKZObjgive.bkz();
+    cerr << "After bkz" << endl;
 
     FP_NR<mpfr_t>::set_prec(old_prec);
+
+    if (BKZObjgive.status != RED_SUCCESS)
+    {
+      cerr << "BKZ reduction failed with error '" << get_red_status_str(BKZObjgive.status);
+      cerr << " for float type " << FLOAT_TYPE_STR[float_type] << endl;
+      return BKZObjgive.status;
+    }
 
     return gram_is_equal(A, G);
   }
