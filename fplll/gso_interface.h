@@ -27,7 +27,11 @@ enum MatGSOInterfaceFlags
   GSO_DEFAULT       = 0,
   GSO_INT_GRAM      = 1,
   GSO_ROW_EXPO      = 2,
-  GSO_OP_FORCE_LONG = 4
+  GSO_OP_FORCE_LONG = 4,
+  GSO_GIVENS_MOVE_LAZY = 8,   // Does not recompute after `row_swap` or `move_row`
+  GSO_GIVENS_FULL_LAZY = 16,  // Does not recompute at all. Numerically unstable.
+  GSO_GIVENS_RECOMPUTE_AFTER_SIZERED =
+      32  // This is the *least* lazy approach. Recomputes after every size reduction.
 };
 
 /**
