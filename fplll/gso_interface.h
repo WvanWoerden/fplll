@@ -176,7 +176,7 @@ public:
    * Must be called after a sequence of row_addmul(_we). This invalidates the
    * i-th line of the GSO.
    */
-  void row_op_end(int first, int last);
+  virtual void row_op_end(int first, int last);
 
   /**
    * Returns Gram matrix coefficients (0 &lt;= i &lt; n_known_rows and
@@ -287,7 +287,7 @@ public:
    * [0, min(last_j, i - 1)] must be valid.
    * If i=n_known_rows, n_known_rows is increased by one.
    */
-  bool update_gso_row(int i, int last_j);
+  virtual bool update_gso_row(int i, int last_j);
 
   /**
    * Updates r(i, j) and mu(i, j) if needed for all j.
@@ -312,7 +312,7 @@ public:
    * are computed by the algorithm. They are set directly to avoid double
    * computation.
    */
-  void set_r(int i, int j, FT &f);
+  virtual void set_r(int i, int j, FT &f);
 
   /**
    * Row old_r becomes row new_r and intermediate rows are shifted.
