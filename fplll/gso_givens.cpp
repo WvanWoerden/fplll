@@ -437,7 +437,26 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_add(int i, int j)
   }
   else
   {
-    throw std::runtime_error("Error: i < j in row_add");
+      l_givens[i].add(l_givens[j], j + 1);
+
+      if (move_lazy)
+      {
+
+        full_column_givens_row(i, j);
+        for (int k = i + 1; k < j; k++)
+        {
+          full_column_givens_rotation(k, k + 1);
+        }
+        compute_mu_and_r_columns(i, j);
+      }
+      else
+      {
+        recompute_givens_matrix(i, j);
+      }
+
+
+
+      compute_mu_and_r(i);
   }
 }
 
@@ -472,8 +491,40 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_sub(int i, int j)
   }
   else
   {
-    // i < j, so affects triangularity
-    throw std::runtime_error("Error: i < j in row_sub");
+
+    // if (enable_row_expo)
+    // {
+    //   l_givens[i].addmul_2exp(l_givens[j], -1.0, row_expo[j] - row_expo[i], ftmp1);
+    //   compute_mu_and_r(i);
+    // }
+    // else
+    //{
+      // Doing b_i <- b_i + c b_j AFFECTS the triangularity because i < j
+      l_givens[i].sub(l_givens[j], j + 1);
+
+      if (move_lazy)
+      {
+
+        full_column_givens_row(i, j);
+        for (int k = i + 1; k < j; k++)
+        {
+          full_column_givens_rotation(k, k + 1);
+        }
+        compute_mu_and_r_columns(i, j);
+      }
+      else
+      {
+        recompute_givens_matrix(i, j);
+      }
+
+
+
+      compute_mu_and_r(i);
+    // }
+
+
+
+    //throw std::runtime_error("Error: i < j in row_sub");
   }
 }
 
@@ -516,7 +567,26 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_addmul_si(int i, in
   }
   else
   {
-    throw std::runtime_error("Error: i < j in row_addmul_si");
+      l_givens[i].addmul(l_givens[j], x, j + 1);
+
+      if (move_lazy)
+      {
+
+        full_column_givens_row(i, j);
+        for (int k = i + 1; k < j; k++)
+        {
+          full_column_givens_rotation(k, k + 1);
+        }
+        compute_mu_and_r_columns(i, j);
+      }
+      else
+      {
+        recompute_givens_matrix(i, j);
+      }
+
+
+
+      compute_mu_and_r(i);
   }
 }
 
