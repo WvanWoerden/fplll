@@ -165,7 +165,7 @@ template <class ZT, class FT> int test_filename(const char *input_filename)
 {
   ZZ_mat<ZT> A;
   int status = 0;
-  status |= read_matrix(A, input_filename);
+  status |= read_file(A, input_filename);
   status |= test_lll<ZT, FT>(A);
   return status;
 }
@@ -189,7 +189,6 @@ template <class ZT, class FT> int test_int_rel(int d, int b)
 
 int main(int /*argc*/, char ** /*argv*/)
 {
-
   int status = 0;
 
   status |= test_filename<mpz_t, double>(TESTDATADIR "/tests/lattices/example2_in");
