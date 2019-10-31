@@ -345,7 +345,7 @@ template <class ZT, class FT> inline void MatGSOGivens<ZT, FT>::negate_row_of_b(
   for (int j = 0; j < get_cols_of_b(); j++)
   {
     b[i][j].neg(b[i][j]);
-    // TODO Here some Givens-thing?
+    l_givens[i][j].neg(l_givens[i][j]);
   }
 }
 
