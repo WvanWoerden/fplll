@@ -302,6 +302,8 @@ public:
    */
   inline bool update_gso();
 
+  virtual inline bool is_givens();
+
   /**
    * Allows row_addmul(_we) for all rows even if the GSO has never been computed.
    */
@@ -620,6 +622,9 @@ template <class ZT, class FT> inline void MatGSOInterface<ZT, FT>::symmetrize_g(
     }
   }
 }
+
+
+template <class ZT, class FT> inline bool MatGSOInterface<ZT, FT>::is_givens() { return false; }
 
 template <class ZT, class FT> inline void MatGSOInterface<ZT, FT>::print_mu_r_g(ostream &os)
 {

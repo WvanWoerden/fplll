@@ -62,7 +62,7 @@ public:
   using MatGSOInterface<ZT, FT>::row_expo;
   using MatGSOInterface<ZT, FT>::n_known_cols;
   using MatGSOInterface<ZT, FT>::tmp_col_expo;
-
+  using MatGSOInterface<ZT, FT>::is_givens;
   using MatGSOInterface<ZT, FT>::remove_last_row;
   using MatGSOInterface<ZT, FT>::print_mu_r_g;
   using MatGSOInterface<ZT, FT>::update_gso;
@@ -256,6 +256,7 @@ template <class ZT, class FT> inline void MatGSO<ZT, FT>::negate_row_of_b(int i)
     }
   }
 }
+
 
 template <class ZT, class FT> inline FT &MatGSO<ZT, FT>::get_gram(FT &f, int i, int j)
 {

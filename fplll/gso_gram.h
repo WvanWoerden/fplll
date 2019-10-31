@@ -54,7 +54,7 @@ public:
   using MatGSOInterface<ZT, FT>::get_r;
   using MatGSOInterface<ZT, FT>::gptr;
   using MatGSOInterface<ZT, FT>::invalidate_gso_row;
-
+  using MatGSOInterface<ZT, FT>::is_givens;
   using MatGSOInterface<ZT, FT>::create_row;
   using MatGSOInterface<ZT, FT>::remove_last_row;
   using MatGSOInterface<ZT, FT>::print_mu_r_g;

@@ -240,7 +240,7 @@ public:
 
   virtual inline bool update_gso() final;
 
-  virtual inline bool is_givens();
+  virtual inline bool is_givens() final;
 
   virtual void set_r(int i, int j, FT &f);
 

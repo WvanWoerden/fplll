@@ -14,9 +14,11 @@
    along with fplll. If not, see <http://www.gnu.org/licenses/>. */
 
 #include <cstring>
+
+#include <gso_interface.h>
 #include <gso.h>
 #include <gso_gram.h>
-#include <gso_interface.h>
+#include <gso_givens.h>
 #include <householder.h>
 #include <nr/matrix.h>
 //#include <random>
@@ -52,15 +54,37 @@ template <class ZT, class FT> Matrix<FT> matrix_relative_difference(Matrix<FT> r
   return diff_matrix;
 }
 
+template <class ZT, class FT> Matrix<FT> matrix_difference(Matrix<FT> r1, Matrix<FT> r2)
+{
+  Matrix<FT> diff_matrix = Matrix<FT>(r1.get_rows(), r1.get_cols());
+  diff_matrix.fill(0.0);
+  FT relativation_factor = 0.0;
+  for (int i = 0; i < r1.get_rows(); i++)
+  {
+    for (int j = 0; j < i; j++)
+    {  // j < i, because r is lower-triangular, and has only 1 on the diagonal.
+
+        diff_matrix[i][j] = abs(r1[i][j] - r2[i][j]);
+      
+    }
+  }
+  return diff_matrix;
+}
+
 // Returns true when the r-matrices of M1 and M2 are entry-wise equal, up to an error 'error'.
-template <class ZT, class FT> bool rs_are_equal(MatGSO<ZT, FT> M1, MatGSOGram<ZT, FT> M2, FT error)
+template <class ZT, class FT> bool rs_are_equal(MatGSOInterface<ZT, FT> &M1, MatGSOInterface<ZT, FT> &M2, FT error)
 {
   Matrix<FT> r1   = M1.get_r_matrix();
   Matrix<FT> r2   = M2.get_r_matrix();
-  Matrix<FT> diff = matrix_relative_difference<ZT, FT>(r1, r2);
-
+  //Matrix<FT> diff = matrix_relative_difference<ZT, FT>(r1, r2);
+  Matrix<FT> diff = matrix_difference<ZT,FT>(r1,r2);
   FT max_entry = 0.0;
+
   max_entry    = diff.get_max();
+  if (M1.is_givens() || M2.is_givens()) {  
+    cerr << "Givens difference: " << endl ; 
+    cerr << max_entry << endl; 
+  }
   if (max_entry > error)
   {
     diff.print(cerr);
@@ -187,8 +211,14 @@ template <class ZT, class FT> int test_ggso(ZZ_mat<ZT> &A)
   MatGSO<Z_NR<ZT>, FP_NR<FT>> M3(A1, U, UT, GSO_INT_GRAM);
   M3.update_gso();
 
+  ZZ_mat<ZT> A2(A);
+  MatGSOGivens<Z_NR<ZT>,FP_NR<FT>> M4(A2, U , UT, GSO_GIVENS_MOVE_LAZY);
+  M4.update_gso();
+
+
   FP_NR<FT> err  = .001;
-  bool retvalue1 = rs_are_equal(M, M2, err);
+  bool retvalue1 = rs_are_equal(M, M2, err); 
+  retvalue1 |= rs_are_equal(M,M4, err);
 
   // TEST B
   // ------------------------
@@ -200,15 +230,18 @@ template <class ZT, class FT> int test_ggso(ZZ_mat<ZT> &A)
     M.move_row(k, j);
     M2.move_row(k, j);
     M3.move_row(k, j);
+    M4.move_row(k,j);
   }
   M.update_gso();
   M2.update_gso();
   M3.update_gso();
-  bool retvalue2 = rs_are_equal(M, M2, err);
+  M4.update_gso();
+  bool retvalue2 = rs_are_equal(M, M2, err) | rs_are_equal(M,M4,err);
 
   M.row_op_begin(0, r);
   M2.row_op_begin(0, r);
   M3.row_op_begin(0, r);
+  M4.row_op_begin(0,r);
   for (int i = 0; i < rand() % 10 + 1; i++)
   {
     int k = rand() % r;
@@ -216,15 +249,18 @@ template <class ZT, class FT> int test_ggso(ZZ_mat<ZT> &A)
     M.row_add(k, j);
     M2.row_add(k, j);
     M3.row_add(k, j);
+    M4.row_add(k,j);
   }
   M.row_op_end(0, r);
   M2.row_op_end(0, r);
   M3.row_op_end(0, r);
+  M4.row_op_end(0,r);
 
   M.update_gso();
   M2.update_gso();
   M3.update_gso();
-  bool retvalue3 = rs_are_equal(M, M2, err);
+  M4.update_gso();
+  bool retvalue3 = rs_are_equal(M, M2, err) | rs_are_equal(M,M4,err);
   bool retvalue4 = rs_are_equal(M3, M2, err);
 
   return (!retvalue1) * 1 + (!retvalue2) * 2 + (!retvalue3) * 4 + (!retvalue4) * 8;
@@ -363,6 +399,7 @@ int main(int /*argc*/, char ** /*argv*/)
   status |= test_int_rel<mpz_t, qd_real>(50, 20);
   status |= test_int_rel<mpz_t, qd_real>(40, 10);
 #endif
+
 #ifdef FPLLL_WITH_DPE
   status |= test_filename<mpz_t, dpe_t>(TESTDATADIR "/tests/lattices/example2_in");
   status |= test_filename<mpz_t, dpe_t>(TESTDATADIR "/tests/lattices/example3_in");
@@ -374,6 +411,7 @@ int main(int /*argc*/, char ** /*argv*/)
   status |= test_int_rel<mpz_t, dpe_t>(50, 20);
   status |= test_int_rel<mpz_t, dpe_t>(40, 10);
 #endif
+
 
   if (status == 0)
   {
