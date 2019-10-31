@@ -143,14 +143,17 @@ int test_bkz(ZZ_mat<ZT> &A, const int block_size, FloatType float_type, int flag
     MatGSOGivens<Z_NR<ZT>, FP_NR<double>> Mgive(A2, U, UT, GSO_GIVENS_MOVE_LAZY);
     Mgive.update_gso();
 
+    cerr << "BKZ on GSO:" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<double>> LLLObj(M, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObj(M, LLLObj, param);
     BKZObj.bkz();
 
+    cerr << "BKZ on GSOGram:" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<double>> LLLObjgram(Mgram, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObjgram(Mgram, LLLObjgram, param);
     BKZObjgram.bkz();
 
+    cerr << "BKZ on GSOGivens:" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<double>> LLLObjgive(Mgive, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<double>> BKZObjgive(Mgive, LLLObjgive, param);
     BKZObjgive.bkz();
@@ -175,14 +178,17 @@ int test_bkz(ZZ_mat<ZT> &A, const int block_size, FloatType float_type, int flag
     MatGSOGivens<Z_NR<ZT>, FP_NR<mpfr_t>> Mgive(A2, U, UT, GSO_GIVENS_MOVE_LAZY);
     Mgive.update_gso();
 
+    cerr << "BKZ on GSO:" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObj(M, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObj(M, LLLObj, param);
     BKZObj.bkz();
 
+    cerr << "BKZ on GSOGram:" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObjgram(Mgram, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObjgram(Mgram, LLLObjgram, param);
     BKZObjgram.bkz();
 
+    cerr << "BKZ on GSOGivens:" << endl;
     LLLReduction<Z_NR<ZT>, FP_NR<mpfr_t>> LLLObjgive(Mgive, LLL_DEF_DELTA, LLL_DEF_ETA, 0);
     BKZReduction<Z_NR<ZT>, FP_NR<mpfr_t>> BKZObjgive(Mgive, LLLObjgive, param);
     BKZObjgive.bkz();

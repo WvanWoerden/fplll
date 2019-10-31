@@ -67,8 +67,8 @@ public:
 
   using MatGSOInterface<ZT, FT>::remove_last_row;
   using MatGSOInterface<ZT, FT>::print_mu_r_g;
-  // using MatGSOInterface<ZT, FT>::update_gso;
-  // using MatGSOInterface<ZT, FT>::update_gso_row;
+  using MatGSOInterface<ZT, FT>::update_gso;
+  using MatGSOInterface<ZT, FT>::update_gso_row;
   using MatGSOInterface<ZT, FT>::row_addmul;
   // using MatGSOInterface<ZT, FT>::symmetrize_g;
   using MatGSOInterface<ZT, FT>::ftmp1;
@@ -236,9 +236,9 @@ public:
 
   virtual bool update_gso_row(int i, int last_j) final;
 
-  virtual inline bool update_gso_row(int i) final;
+  //virtual inline bool update_gso_row(int i) final;
 
-  virtual inline bool update_gso() final;
+  //virtual inline bool update_gso() final;
 
   virtual inline bool is_givens() final;
 
@@ -431,6 +431,7 @@ template <class ZT, class FT> inline void MatGSOGivens<ZT, FT>::create_rows(int 
     discover_all_rows();
 }
 
+/*
 template <class ZT, class FT> inline bool MatGSOGivens<ZT, FT>::update_gso_row(int i)
 {
   return update_gso_row(i, i);
@@ -447,6 +448,7 @@ template <class ZT, class FT> inline bool MatGSOGivens<ZT, FT>::update_gso()
 
   return true;
 }
+*/
 
 template <class ZT, class FT> inline void MatGSOGivens<ZT, FT>::remove_last_rows(int n_removed_rows)
 {

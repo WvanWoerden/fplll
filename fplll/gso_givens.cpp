@@ -425,7 +425,7 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_add(int i, int j)
       l_givens[i].addmul_2exp(l_givens[j], 1.0, row_expo[j] - row_expo[i], ftmp1);
 
       // TODO LAZY
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
     else
     {
@@ -434,7 +434,7 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_add(int i, int j)
       l_givens[i].add(l_givens[j], j + 1);
 
       // TODO: making this lazy
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
   }
   else
@@ -479,7 +479,7 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_sub(int i, int j)
     if (enable_row_expo)
     {
       l_givens[i].addmul_2exp(l_givens[j], -1.0, row_expo[j] - row_expo[i], ftmp1);
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
     else
     {
@@ -488,7 +488,7 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_sub(int i, int j)
 
       // TODO: making this lazy
 
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
   }
   else
@@ -553,7 +553,7 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_addmul_si(int i, in
     if (enable_row_expo)
     {
       l_givens[i].addmul_2exp(l_givens[j], x, row_expo[j] - row_expo[i], ftmp1);
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
     else
     {
@@ -564,7 +564,7 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_addmul_si(int i, in
       l_givens[i].addmul(l_givens[j], x, j + 1);  // j+1 really needed!
 
       // TODO: making this lazy
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
   }
   else
@@ -613,7 +613,7 @@ void MatGSOGivens<ZT, FT>::row_addmul_si_2exp(int i, int j, long x, long expo)
       long double dx = (long double)x;
 
       l_givens[i].addmul_2exp(l_givens[j], dx, row_expo[j] - row_expo[i] + expo, ftmp1);
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
     else
     {
@@ -622,7 +622,7 @@ void MatGSOGivens<ZT, FT>::row_addmul_si_2exp(int i, int j, long x, long expo)
       l_givens[i].addmul_2exp(l_givens[j], x, expo, ftmp1);
 
       // TODO: making this lazy
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
   }
   else
@@ -659,7 +659,7 @@ void MatGSOGivens<ZT, FT>::row_addmul_2exp(int i, int j, const ZT &x, long expo)
 
       l_givens[i].addmul_2exp(l_givens[j], dx, row_expo[j] - row_expo[i] + expo, ftmp1);
       // LAZY
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
     else
     {
@@ -671,7 +671,7 @@ void MatGSOGivens<ZT, FT>::row_addmul_2exp(int i, int j, const ZT &x, long expo)
         l_givens(i, k).add(l_givens(i, k), ftmp1);
       }
       // LAZY
-      compute_mu_and_r(i);
+      //compute_mu_and_r(i);
     }
   }
   else
@@ -744,7 +744,7 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_swap(int i, int j)
     {
       full_column_givens_rotation(k, k + 1);
     }
-    compute_mu_and_r_columns(i, j);
+    //compute_mu_and_r_columns(i, j);
   }
   else
   {
@@ -869,6 +869,8 @@ template <class ZT, class FT> void MatGSOGivens<ZT, FT>::row_op_end(int first, i
   {
     recompute_givens_matrix(first, last);
   }
+  for(int j = first; j < last; j++)
+    compute_mu_and_r(j);
 }
 
 template <class ZT, class FT> void MatGSOGivens<ZT, FT>::discover_row()
